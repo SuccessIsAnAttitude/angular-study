@@ -1,0 +1,87 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>angularjs 三级联动</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <style type="text/css">
+        label {
+            padding: 5px 10px;
+            border: 1px solid #fff;
+        }
+
+        .error {
+            border-color: #f00;
+        }
+    </style>
+
+</head>
+
+<body ng-app="app">
+    <h1>angularjs省、市、区 三级联动 </h1>
+    <div ng-controller='cityCtrl' class="form-inline">
+        <label ng-class="{error: error.province}"> 省份：
+            <select class="form-control" ng-model="selected" ng-options="s.name for s in list" ng-change="c()">
+                <option value="">--请选择--</option>
+            </select>
+        </label>
+        <label ng-show="selected.child.length" ng-class="{error: error.city}"> 市/区：
+            <select class="form-control" ng-model="selected2" ng-options="sh.name for sh in selected.child" ng-change="c2()">
+                <option value="">--请选择--</option>
+            </select>
+        </label>
+        <label ng-show="selected2.child.length" ng-class="{error: error.area}"> 县级/区域：
+            <select class="form-control" ng-model="selected3" ng-options="x.value for x in selected2.child" ng-change="c3()">
+                <option value="">--请选择--</option>
+            </select>
+        </label> <br />
+
+    </div>
+
+
+    <script src="/min/angular.min.js"></script>
+    <script type="text/javascript">
+        var app = angular.module('app', []);
+
+        app.controller('cityCtrl', ['$scope', '$http', function($scope, $http) {
+            $scope.error = {};
+            $scope.list = [];
+            $http.get('data.json').success(function(data) {
+                $scope.list = data;
+            });
+
+
+            $scope.c = function() {
+                $scope.error.province = false;
+                $scope.error.city = false;
+                $scope.error.area = false;
+                $scope.selected2 = "";
+                $scope.selected3 = "";
+            };
+
+            $scope.c2 = function() {
+                $scope.error.city = false;
+                $scope.error.area = false;
+                $scope.selected3 = "";
+            };
+
+            $scope.c3 = function() {
+                $scope.error.area = false;
+            };
+
+            $scope.submit = function() {
+                $scope.error.province = $scope.selected ? false : true;
+                $scope.error.city = $scope.selected2 ? false : true;
+                $scope.error.area = $scope.selected3 ? false : true;
+            };
+
+
+        }]);
+
+        //angular.bootstrap(document, ['app']); //手动启动ng-app
+    </script>
+
+
+
+</body></html>
